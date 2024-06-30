@@ -10,7 +10,7 @@
 #include "PluginEditor.h"
 
 //==============================================================================
-SimpleEQ2AudioProcessor::SimpleEQ2AudioProcessor()
+SimpleEQAudioProcessor::SimpleEQAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
      : AudioProcessor (BusesProperties()
                      #if ! JucePlugin_IsMidiEffect
@@ -24,17 +24,17 @@ SimpleEQ2AudioProcessor::SimpleEQ2AudioProcessor()
 {
 }
 
-SimpleEQ2AudioProcessor::~SimpleEQ2AudioProcessor()
+SimpleEQAudioProcessor::~SimpleEQAudioProcessor()
 {
 }
 
 //==============================================================================
-const juce::String SimpleEQ2AudioProcessor::getName() const
+const juce::String SimpleEQAudioProcessor::getName() const
 {
     return JucePlugin_Name;
 }
 
-bool SimpleEQ2AudioProcessor::acceptsMidi() const
+bool SimpleEQAudioProcessor::acceptsMidi() const
 {
    #if JucePlugin_WantsMidiInput
     return true;
@@ -43,7 +43,7 @@ bool SimpleEQ2AudioProcessor::acceptsMidi() const
    #endif
 }
 
-bool SimpleEQ2AudioProcessor::producesMidi() const
+bool SimpleEQAudioProcessor::producesMidi() const
 {
    #if JucePlugin_ProducesMidiOutput
     return true;
@@ -52,7 +52,7 @@ bool SimpleEQ2AudioProcessor::producesMidi() const
    #endif
 }
 
-bool SimpleEQ2AudioProcessor::isMidiEffect() const
+bool SimpleEQAudioProcessor::isMidiEffect() const
 {
    #if JucePlugin_IsMidiEffect
     return true;
@@ -61,50 +61,50 @@ bool SimpleEQ2AudioProcessor::isMidiEffect() const
    #endif
 }
 
-double SimpleEQ2AudioProcessor::getTailLengthSeconds() const
+double SimpleEQAudioProcessor::getTailLengthSeconds() const
 {
     return 0.0;
 }
 
-int SimpleEQ2AudioProcessor::getNumPrograms()
+int SimpleEQAudioProcessor::getNumPrograms()
 {
     return 1;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
                 // so this should be at least 1, even if you're not really implementing programs.
 }
 
-int SimpleEQ2AudioProcessor::getCurrentProgram()
+int SimpleEQAudioProcessor::getCurrentProgram()
 {
     return 0;
 }
 
-void SimpleEQ2AudioProcessor::setCurrentProgram (int index)
+void SimpleEQAudioProcessor::setCurrentProgram (int index)
 {
 }
 
-const juce::String SimpleEQ2AudioProcessor::getProgramName (int index)
+const juce::String SimpleEQAudioProcessor::getProgramName (int index)
 {
     return {};
 }
 
-void SimpleEQ2AudioProcessor::changeProgramName (int index, const juce::String& newName)
+void SimpleEQAudioProcessor::changeProgramName (int index, const juce::String& newName)
 {
 }
 
 //==============================================================================
-void SimpleEQ2AudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+void SimpleEQAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
 }
 
-void SimpleEQ2AudioProcessor::releaseResources()
+void SimpleEQAudioProcessor::releaseResources()
 {
     // When playback stops, you can use this as an opportunity to free up any
     // spare memory, etc.
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
-bool SimpleEQ2AudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
+bool SimpleEQAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
   #if JucePlugin_IsMidiEffect
     juce::ignoreUnused (layouts);
@@ -129,7 +129,7 @@ bool SimpleEQ2AudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts
 }
 #endif
 
-void SimpleEQ2AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+void SimpleEQAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
@@ -159,25 +159,25 @@ void SimpleEQ2AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
 }
 
 //==============================================================================
-bool SimpleEQ2AudioProcessor::hasEditor() const
+bool SimpleEQAudioProcessor::hasEditor() const
 {
     return true; // (change this to false if you choose to not supply an editor)
 }
 
-juce::AudioProcessorEditor* SimpleEQ2AudioProcessor::createEditor()
+juce::AudioProcessorEditor* SimpleEQAudioProcessor::createEditor()
 {
-    return new SimpleEQ2AudioProcessorEditor (*this);
+    return new SimpleEQAudioProcessorEditor (*this);
 }
 
 //==============================================================================
-void SimpleEQ2AudioProcessor::getStateInformation (juce::MemoryBlock& destData)
+void SimpleEQAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
 }
 
-void SimpleEQ2AudioProcessor::setStateInformation (const void* data, int sizeInBytes)
+void SimpleEQAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
@@ -187,5 +187,5 @@ void SimpleEQ2AudioProcessor::setStateInformation (const void* data, int sizeInB
 // This creates new instances of the plugin..
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
-    return new SimpleEQ2AudioProcessor();
+    return new SimpleEQAudioProcessor();
 }
