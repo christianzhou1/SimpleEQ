@@ -95,6 +95,23 @@ void SimpleEQAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
+
+
+    // we must prepare our filters before we use them
+    // passing a process spec object to the chains which will pass it to each link in the chain
+
+    juce::dsp::ProcessSpec spec;
+
+    spec.maximumBlockSize = samplesPerBlock;
+    
+    spec.numChannels = 1;
+
+    spec.sampleRate = sampleRate;
+
+    // pass the spec into each chain
+
+    leftChain.prepare(spec);
+    rightChain.prepare(spec);
 }
 
 void SimpleEQAudioProcessor::releaseResources()
