@@ -33,7 +33,7 @@
   <EXPORTFORMATS>
     <VS2022 targetFolder="Builds/VisualStudio2022">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="SimpleEQ"/>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="SimpleEQ" postbuildCommand="copy /Y &quot;$(OutDir)\SimpleEQ.dll&quot; &quot;$(OutDir)\SimpleEQ.vst3\Contents\x86_64-win\SimpleEQ.vst3&quot;&#10;del /s /q &quot;$(OutDir)/SimpleEQ.vst3\Contents\moduleinfo.json&quot;&#10;if not exist &quot;$(OutDir)/SimpleEQ.vst3\Contents\Resources\&quot; del /s /q &quot;$(OutDir)/SimpleEQ.vst3\Contents\Resources&quot; &amp;&amp; mkdir &quot;$(OutDir)/SimpleEQ.vst3\Contents\Resources&quot;&#10;&quot;$(SolutionDir)$(Platform)\$(Configuration)\VST3 Manifest Helper\juce_vst3_helper.exe&quot; -create -version &quot;1.0.0&quot; -path &quot;$(OutDir)/SimpleEQ.vst3&quot; -output &quot;$(OutDir)/SimpleEQ.vst3\Contents\Resources\moduleinfo.json&quot;&#10;copy /Y &quot;$(OutDir)\SimpleEQ.vst3\Contents\x86_64-win\SimpleEQ.vst3&quot; &quot;C:\Program Files\Common Files\VST3\SimpleEQ.vst3&quot;&#10;&quot;C:\Users\Christian\JUCE\extras\AudioPluginHost\Builds\VisualStudio2022\x64\Debug\App\AudioPluginHost.exe&quot;"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="SimpleEQ"/>
       </CONFIGURATIONS>
       <MODULEPATHS>

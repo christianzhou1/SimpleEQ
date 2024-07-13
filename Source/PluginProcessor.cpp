@@ -112,6 +112,24 @@ void SimpleEQAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
 
     leftChain.prepare(spec);
     rightChain.prepare(spec);
+
+    auto chainSettings = getChainSettings(apvts);
+
+    //IIR::Coefficients are Reference-counted objects that own a juce::Array<float>. These helper functions return instances allocated on the heap. We must dereference them to copy the underlying coefficients array
+
+    auto peakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(
+        sampleRate, 
+        chainSettings.peakFreq, 
+        chainSettings.peakQuality, 
+        juce::Decibels::decibelsToGain(chainSettings.peakGainInDecibles));
+
+    //dereferencing peakCoefficients for each processing chain
+    // ChainPositions is our enum that references positions (lowcut, peak, highcut) on the chain. See PluginProcessor.h
+
+    *leftChain.get<ChainPositions::Peak>().coefficients = *peakCoefficients;
+    *rightChain.get<ChainPositions::Peak>().coefficients = *peakCoefficients;
+
+
 }
 
 void SimpleEQAudioProcessor::releaseResources()
@@ -161,18 +179,51 @@ void SimpleEQAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
-    // Make sure to reset the state if your inner loop is processing
-    // the samples and the outer loop is handling the channels.
-    // Alternatively, you can process the samples with the channels
-    // interleaved by keeping the same state.
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-        auto* channelData = buffer.getWritePointer (channel);
 
-        // ..do something to the data...
-    }
+
+
+    auto chainSettings = getChainSettings(apvts);
+
+    //IIR::Coefficients are Reference-counted objects that own a juce::Array<float>. These helper functions return instances allocated on the heap. We must dereference them to copy the underlying coefficients array
+
+    auto peakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(
+        getSampleRate(),
+        chainSettings.peakFreq,
+        chainSettings.peakQuality,
+        juce::Decibels::decibelsToGain(chainSettings.peakGainInDecibles));
+
+    //dereferencing peakCoefficients for each processing chain
+    // ChainPositions is our enum that references positions (lowcut, peak, highcut) on the chain. See PluginProcessor.h
+
+    *leftChain.get<ChainPositions::Peak>().coefficients = *peakCoefficients;
+    *rightChain.get<ChainPositions::Peak>().coefficients = *peakCoefficients;
+
+
+
+
+    //dsp::ProcessorChains process dsp::ProcessContextReplacing<> instances. i.e. the processor chain requires a processing context to be passed to it in order to run audio thru the links in the chain
+    // to make a processing context, we need to supply it with an audio block instance. i.e. dsp::ProcessContextReplacing<> instances are constructed with dsp::AudioBlock<>'s
+    // the processBlock function is called by the host and is given a buffer which can have a number of channels
+    // we need to extract the left and right channels (channels 0 and 1) from the buffer
+    
+
+    //1. create an audio block. we initialize it with our buffer
+    juce::dsp::AudioBlock<float> block(buffer);
+
+    //2. use the helper function in the audio block class to extract individual channels from the buffer
+    auto leftBlock = block.getSingleChannelBlock(0);
+    auto rightBlock = block.getSingleChannelBlock(1);
+
+    //3. now that we have audio blocks representing each channel, we can create processing contexts that wrap each audio block for the cahnnels (initialized with each channel's block)
+    juce::dsp::ProcessContextReplacing<float> leftContext(leftBlock);
+    juce::dsp::ProcessContextReplacing<float> rightContext(rightBlock);
+
+    // now we have: blocks representing individual channels, and a context that provides a wrapper around the block that the chain can use.
+    // now we can pass these contexts to the mono filter chains
+
+    leftChain.process(leftContext);
+    rightChain.process(rightContext);
+
 }
 
 //==============================================================================
@@ -199,6 +250,26 @@ void SimpleEQAudioProcessor::setStateInformation (const void* data, int sizeInBy
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
+}
+
+ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts)
+{
+    ChainSettings settings;
+    
+    //this gets the NORMALIZED values which we dont want:
+    // settings.lowCutFreq = apvts.getParameter("LowCut Freq")->getValue();
+
+    //we use the getRawParameterValue function instead
+    settings.lowCutFreq = apvts.getRawParameterValue("LowCut Freq")->load();
+    settings.highCutFreq = apvts.getRawParameterValue("HighCut Freq")->load();
+    settings.peakFreq = apvts.getRawParameterValue("Peak Freq")->load();
+    settings.peakGainInDecibles = apvts.getRawParameterValue("Peak Gain")->load();
+    settings.peakQuality= apvts.getRawParameterValue("Peak Quality")->load();
+    settings.lowCutSlope= apvts.getRawParameterValue("LowCut Slope")->load();
+    settings.highCutSlope= apvts.getRawParameterValue("HighCut Freq")->load();
+    
+
+    return settings;
 }
 
 juce::AudioProcessorValueTreeState::ParameterLayout SimpleEQAudioProcessor::createParameterLayout()
