@@ -1,0 +1,22 @@
+rem --SimpleEQ_StandalonePlugin
+copy /Y "$(OutDir)\SimpleEQ.dll" "$(OutDir)\SimpleEQ.vst3\Contents\x86_64-win\SimpleEQ.vst3"
+del /s /q "$(OutDir)/SimpleEQ.vst3\Contents\moduleinfo.json"
+if not exist "$(OutDir)/SimpleEQ.vst3\Contents\Resources\" del /s /q "$(OutDir)/SimpleEQ.vst3\Contents\Resources" && mkdir "$(OutDir)/SimpleEQ.vst3\Contents\Resources"
+"$(SolutionDir)$(Platform)\$(Configuration)\VST3 Manifest Helper\juce_vst3_helper.exe" -create -version "1.0.0" -path "$(OutDir)/SimpleEQ.vst3" -output "$(OutDir)/SimpleEQ.vst3\Contents\Resources\moduleinfo.json"
+
+
+
+rem --SimpleEQ_VST3
+copy /Y "$(OutDir)\SimpleEQ.dll" "$(OutDir)\SimpleEQ.vst3\Contents\x86_64-win\SimpleEQ.vst3"
+del /s /q "$(OutDir)/SimpleEQ.vst3\Contents\moduleinfo.json"
+if not exist "$(OutDir)/SimpleEQ.vst3\Contents\Resources\" del /s /q "$(OutDir)/SimpleEQ.vst3\Contents\Resources" && mkdir "$(OutDir)/SimpleEQ.vst3\Contents\Resources"
+"$(SolutionDir)$(Platform)\$(Configuration)\VST3 Manifest Helper\juce_vst3_helper.exe" -create -version "1.0.0" -path "$(OutDir)/SimpleEQ.vst3" -output "$(OutDir)/SimpleEQ.vst3\Contents\Resources\moduleinfo.json"
+copy /Y "$(OutDir)\SimpleEQ.vst3\Contents\x86_64-win\SimpleEQ.vst3" "C:\Program Files\Common Files\VST3\SimpleEQ.vst3"
+"C:\Users\Christian\JUCE\extras\AudioPluginHost\Builds\VisualStudio2022\x64\Debug\App\AudioPluginHost.exe"
+
+
+rem --SimpleEQ_VST3ManifestHelper
+copy /Y "$(OutDir)\SimpleEQ.dll" "$(OutDir)\SimpleEQ.vst3\Contents\x86_64-win\SimpleEQ.vst3"
+del /s /q "$(OutDir)/SimpleEQ.vst3\Contents\moduleinfo.json"
+if not exist "$(OutDir)/SimpleEQ.vst3\Contents\Resources\" del /s /q "$(OutDir)/SimpleEQ.vst3\Contents\Resources" && mkdir "$(OutDir)/SimpleEQ.vst3\Contents\Resources"
+"$(SolutionDir)$(Platform)\$(Configuration)\VST3 Manifest Helper\juce_vst3_helper.exe" -create -version "1.0.0" -path "$(OutDir)/SimpleEQ.vst3" -output "$(OutDir)/SimpleEQ.vst3\Contents\Resources\moduleinfo.json"

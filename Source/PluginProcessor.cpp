@@ -184,7 +184,7 @@ void SimpleEQAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
 
     auto chainSettings = getChainSettings(apvts);
 
-    //IIR::Coefficients are Reference-counted objects that own a juce::Array<float>. These helper functions return instances allocated on the heap. We must dereference them to copy the underlying coefficients array
+    // IIR::Coefficients are Reference-counted objects that own a juce::Array<float>. These helper functions return instances allocated on the heap. We must dereference them to copy the underlying coefficients array
 
     auto peakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(
         getSampleRate(),
@@ -192,8 +192,8 @@ void SimpleEQAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
         chainSettings.peakQuality,
         juce::Decibels::decibelsToGain(chainSettings.peakGainInDecibles));
 
-    //dereferencing peakCoefficients for each processing chain
-    // ChainPositions is our enum that references positions (lowcut, peak, highcut) on the chain. See PluginProcessor.h
+    // dereferencing peakCoefficients for each processing chain
+    // ChainPositions is our enum that references positions (lowcut, peak, highcut) on the chain.
 
     *leftChain.get<ChainPositions::Peak>().coefficients = *peakCoefficients;
     *rightChain.get<ChainPositions::Peak>().coefficients = *peakCoefficients;
@@ -201,7 +201,7 @@ void SimpleEQAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
 
 
 
-    //dsp::ProcessorChains process dsp::ProcessContextReplacing<> instances. i.e. the processor chain requires a processing context to be passed to it in order to run audio thru the links in the chain
+    // dsp::ProcessorChains process dsp::ProcessContextReplacing<> instances. i.e. the processor chain requires a processing context to be passed to it in order to run audio thru the links in the chain
     // to make a processing context, we need to supply it with an audio block instance. i.e. dsp::ProcessContextReplacing<> instances are constructed with dsp::AudioBlock<>'s
     // the processBlock function is called by the host and is given a buffer which can have a number of channels
     // we need to extract the left and right channels (channels 0 and 1) from the buffer
@@ -256,7 +256,7 @@ ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts)
 {
     ChainSettings settings;
     
-    //this gets the NORMALIZED values which we dont want:
+    // avoid getParameter which gets the NORMALIZED values which we dont want:
     // settings.lowCutFreq = apvts.getParameter("LowCut Freq")->getValue();
 
     //we use the getRawParameterValue function instead
@@ -278,17 +278,17 @@ juce::AudioProcessorValueTreeState::ParameterLayout SimpleEQAudioProcessor::crea
 
     layout.add(std::make_unique<juce::AudioParameterFloat>("LowCut Freq",
         "LowCut Freq",
-        juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 1.f),
+        juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 0.35f),
         20.f));
 
     layout.add(std::make_unique<juce::AudioParameterFloat>("HighCut Freq",
         "HighCut Freq",
-        juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 1.f),
+        juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 0.35f),
         20000.f));
 
     layout.add(std::make_unique<juce::AudioParameterFloat>("Peak Freq",
         "Peak Freq",
-        juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 1.f),
+        juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 0.35f),
         750.f));
 
     layout.add(std::make_unique<juce::AudioParameterFloat>("Peak Gain",

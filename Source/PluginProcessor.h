@@ -10,11 +10,14 @@
 
 #include <JuceHeader.h>
 
+// extract parameters form the audio processor vaule tree state 
+// a data structure representing all parameter vaules
 struct ChainSettings {
     float peakFreq{ 0 }, peakGainInDecibles{ 0 }, peakQuality{ 1.f };
     float lowCutFreq{ 0 }, highCutFreq{ 0 };
     int lowCutSlope{ 0 }, highCutSlope{ 0 };
 };
+// getter function for ChainSettings
 ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts);
 
 
@@ -81,6 +84,8 @@ private:
     // we need 2 instances of the MonoChain for stereo processing
     MonoChain leftChain, rightChain;
 
+    // our custom enum to describe chain positions
+    // without using enum, we can use leftChain.get<int Index>() to get links in the processor chain
     enum ChainPositions
     {
         LowCut,
