@@ -118,17 +118,7 @@ void SimpleEQAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
     //IIR::Coefficients are Reference-counted objects that own a juce::Array<float>. These helper functions return instances allocated on the heap. We must dereference them to copy the underlying coefficients array
 
     //--------------------- peak filter coefficient ----------------------------
-    auto peakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(
-        sampleRate, 
-        chainSettings.peakFreq, 
-        chainSettings.peakQuality, 
-        juce::Decibels::decibelsToGain(chainSettings.peakGainInDecibles));
-
-    //dereferencing peakCoefficients for each processing chain
-    // ChainPositions is our enum that references positions (lowcut, peak, highcut) on the chain. See PluginProcessor.h
-
-    *leftChain.get<ChainPositions::Peak>().coefficients = *peakCoefficients;
-    *rightChain.get<ChainPositions::Peak>().coefficients = *peakCoefficients;
+    updatePeakFilter(chainSettings);
 
     //----------------------low cut and high cut coefficients -----------------------
     // possible ordersL: slope choice 0,1,2,3 -> 12, 24, 36, 48 db/oct -> order: 2, 4, 6, 8
@@ -276,18 +266,7 @@ void SimpleEQAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
 
     // IIR::Coefficients are Reference-counted objects that own a juce::Array<float>. These helper functions return instances allocated on the heap. We must dereference them to copy the underlying coefficients array
 
-    auto peakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(
-        getSampleRate(),
-        chainSettings.peakFreq,
-        chainSettings.peakQuality,
-        juce::Decibels::decibelsToGain(chainSettings.peakGainInDecibles));
-
-    // dereferencing peakCoefficients for each processing chain
-    // ChainPositions is our enum that references positions (lowcut, peak, highcut) on the chain.
-
-    *leftChain.get<ChainPositions::Peak>().coefficients = *peakCoefficients;
-    *rightChain.get<ChainPositions::Peak>().coefficients = *peakCoefficients;
-
+    updatePeakFilter(chainSettings);
 
     auto cutCoefficients = juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(chainSettings.lowCutFreq, getSampleRate(), 2 * (chainSettings.lowCutSlope + 1));
 
@@ -451,6 +430,27 @@ ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts)
 
     return settings;
 }
+
+void SimpleEQAudioProcessor::updatePeakFilter(const ChainSettings& chainSettings)
+{
+    auto peakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(
+        getSampleRate(),
+        chainSettings.peakFreq,
+        chainSettings.peakQuality,
+        juce::Decibels::decibelsToGain(chainSettings.peakGainInDecibles));
+
+    // dereferencing peakCoefficients for each processing chain
+    // ChainPositions is our enum that references positions (lowcut, peak, highcut) on the chain.
+    updateCoefficients(leftChain.get<ChainPositions::Peak>().coefficients, peakCoefficients);
+    updateCoefficients(rightChain.get<ChainPositions::Peak>().coefficients, peakCoefficients);
+
+}
+
+void SimpleEQAudioProcessor::updateCoefficients(Coefficients& old, const Coefficients& replacements)
+{
+    *old = *replacements;
+}
+
 
 juce::AudioProcessorValueTreeState::ParameterLayout SimpleEQAudioProcessor::createParameterLayout()
 {
