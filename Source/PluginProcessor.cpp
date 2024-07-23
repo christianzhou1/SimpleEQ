@@ -127,7 +127,10 @@ void SimpleEQAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
 
 
     auto& leftLowCut = leftChain.get<ChainPositions::LowCut>();
-
+    updateCutFilter(leftLowCut, cutCoefficients, chainSettings.lowCutSlope);
+    auto& rightLowCut = leftChain.get<ChainPositions::LowCut>();
+    updateCutFilter(rightLowCut, cutCoefficients, chainSettings.lowCutSlope);
+    /*
     leftLowCut.setBypassed<0>(true);
     leftLowCut.setBypassed<1>(true);
     leftLowCut.setBypassed<2>(true);
@@ -208,7 +211,7 @@ void SimpleEQAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
             rightLowCut.setBypassed<3>(false);
             break;
         }
-    }
+    }*/
 
 }
 
@@ -273,7 +276,8 @@ void SimpleEQAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
 
     auto& leftLowCut = leftChain.get<ChainPositions::LowCut>();
 
-    leftLowCut.setBypassed<0>(true);
+    updateCutFilter(leftLowCut, cutCoefficients, chainSettings.lowCutSlope);
+    /*leftLowCut.setBypassed<0>(true);
     leftLowCut.setBypassed<1>(true);
     leftLowCut.setBypassed<2>(true);
     leftLowCut.setBypassed<3>(true);
@@ -311,11 +315,12 @@ void SimpleEQAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
             leftLowCut.setBypassed<3>(false);
             break;
         }
-    }
+    }*/
 
     auto& rightLowCut = rightChain.get<ChainPositions::LowCut>();
+    updateCutFilter(rightLowCut, cutCoefficients, chainSettings.lowCutSlope);
 
-    rightLowCut.setBypassed<0>(true);
+    /*rightLowCut.setBypassed<0>(true);
     rightLowCut.setBypassed<1>(true);
     rightLowCut.setBypassed<2>(true);
     rightLowCut.setBypassed<3>(true);
@@ -353,7 +358,7 @@ void SimpleEQAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
             rightLowCut.setBypassed<3>(false);
             break;
         }
-    }
+    }*/
 
 
 
