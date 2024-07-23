@@ -113,47 +113,42 @@ private:
         // possible orders: slope choice 0,1,2,3 -> 12, 24, 36, 48 db/oct -> order: 2, 4, 6, 8
         // calculate order from slope choice: (slope choice + 1) * 2
 
-        /*auto cutCoefficients = juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(chainSettings.lowCutFreq, sampleRate, 2 * (chainSettings.lowCutSlope + 1));
-
-
-        auto& leftLowCut = leftChain.get<ChainPositions::LowCut>();*/
-
         leftLowCut.template setBypassed<0>(true);
-        leftLowCut.setBypassed<1>(true);
-        leftLowCut.setBypassed<2>(true);
-        leftLowCut.setBypassed<3>(true);
+        leftLowCut.template setBypassed<1>(true);
+        leftLowCut.template setBypassed<2>(true);
+        leftLowCut.template setBypassed<3>(true);
 
         switch (lowCutSlope) {
         case Slope_12: {
-            *leftLowCut.get<0>().coefficients = *cutCoefficients[0];
-            leftLowCut.setBypassed<0>(false);
+            *leftLowCut.template get<0>().coefficients = *cutCoefficients[0];
+            leftLowCut.template setBypassed<0>(false);
             break;
         }
         case Slope_24: {
-            *leftLowCut.get<0>().coefficients = *cutCoefficients[0];
-            leftLowCut.setBypassed<0>(false);
-            *leftLowCut.get<1>().coefficients = *cutCoefficients[0];
-            leftLowCut.setBypassed<1>(false);
+            *leftLowCut.template get<0>().coefficients = *cutCoefficients[0];
+            leftLowCut.template setBypassed<0>(false);
+            *leftLowCut.template get<1>().coefficients = *cutCoefficients[0];
+            leftLowCut.template setBypassed<1>(false);
             break;
         }
         case Slope_36: {
-            *leftLowCut.get<0>().coefficients = *cutCoefficients[0];
-            leftLowCut.setBypassed<0>(false);
-            *leftLowCut.get<1>().coefficients = *cutCoefficients[0];
-            leftLowCut.setBypassed<1>(false);
-            *leftLowCut.get<2>().coefficients = *cutCoefficients[0];
-            leftLowCut.setBypassed<2>(false);
+            *leftLowCut.template get<0>().coefficients = *cutCoefficients[0];
+            leftLowCut.template setBypassed<0>(false);
+            *leftLowCut.template get<1>().coefficients = *cutCoefficients[0];
+            leftLowCut.template setBypassed<1>(false);
+            *leftLowCut.template get<2>().coefficients = *cutCoefficients[0];
+            leftLowCut.template setBypassed<2>(false);
             break;
         }
         case Slope_48: {
-            *leftLowCut.get<0>().coefficients = *cutCoefficients[0];
-            leftLowCut.setBypassed<0>(false);
-            *leftLowCut.get<1>().coefficients = *cutCoefficients[0];
-            leftLowCut.setBypassed<1>(false);
-            *leftLowCut.get<2>().coefficients = *cutCoefficients[0];
-            leftLowCut.setBypassed<2>(false);
-            *leftLowCut.get<3>().coefficients = *cutCoefficients[0];
-            leftLowCut.setBypassed<3>(false);
+            *leftLowCut.template get<0>().coefficients = *cutCoefficients[0];
+            leftLowCut.template setBypassed<0>(false);
+            *leftLowCut.template get<1>().coefficients = *cutCoefficients[0];
+            leftLowCut.template setBypassed<1>(false);
+            *leftLowCut.template get<2>().coefficients = *cutCoefficients[0];
+            leftLowCut.template setBypassed<2>(false);
+            *leftLowCut.template get<3>().coefficients = *cutCoefficients[0];
+            leftLowCut.template setBypassed<3>(false);
             break;
         }
         }
